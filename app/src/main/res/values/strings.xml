@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">LoginFirebase</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="resgistrar">Registrar</string>
+    <string name="iniciar_sesion">Iniciar Sesion</string>
+    <string name="jccs">JCCS</string>
+    <string name="hint_name">Nombre</string>
+    <string name="hint_city">Ciudad</string>
+    <string name="registrate">Registrate</string>
+    <string name="hint_phone">Telefóno</string>
+    <string name="log_out">Cerrar sesion</string>
+    <string name="log_editar">Editar</string>
+    <string name="log_update">Actalizar</string>
+    <string name="auth">user</string>
+</resources>
