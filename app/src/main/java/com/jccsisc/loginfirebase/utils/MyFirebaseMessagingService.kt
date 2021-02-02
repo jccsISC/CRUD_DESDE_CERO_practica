@@ -1,4 +1,4 @@
-package com.jccsisc.loginfirebase
+package com.jccsisc.loginfirebase.utils
 
 import android.os.Handler
 import android.os.Looper

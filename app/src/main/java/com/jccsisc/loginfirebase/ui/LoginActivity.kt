@@ -1,4 +1,4 @@
-package com.jccsisc.loginfirebase
+package com.jccsisc.loginfirebase.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -11,20 +11,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthCredential
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.jccsisc.loginfirebase.utils.ProviderType
+import com.jccsisc.loginfirebase.R
+import com.jccsisc.loginfirebase.data.model.Model
 import com.jccsisc.loginfirebase.databinding.ActivityLoginBinding
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -32,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
     private var GOOGLE_SIGN_IN = 100
     private val authUser: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val db = FirebaseFirestore.getInstance()
+    lateinit var  analitycs: FirebaseAnalytics
 
     val authEmail = RegisterActivity.authEmail
 
@@ -41,22 +41,23 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        analitycs()
-        remotConfig()
-        notification()
+        //Lanzaremos un evento personalizado en analitycs
+        analitycs = FirebaseAnalytics.getInstance(this)
+        analytics()
+        remoteConfig()
+        pushNotificationShow()
         setUp()
         session()
     }
 
-    private fun analitycs() {
-        //Lanzaremos un evento personalizado en analitycs
-        val analitycs: FirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+    private fun analytics() {
         val bundle = Bundle()
-        bundle.putString("message", "Integración de firebase completa")
-        analitycs.logEvent("InitScreen", bundle)
+        bundle.putString("message", "Actual")
+        analitycs.logEvent("MODELO", bundle)
     }
 
-    private fun remotConfig() {
+    private fun remoteConfig() {
         //Remote Config
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = 30
@@ -73,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
         )
     }
 
-    private fun notification() {
+    private fun pushNotificationShow() {
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
             it.result?.token?.let {
                 Log.d("TOKEN", "Este es el token del dispositivo: ${it}")
@@ -123,6 +124,7 @@ class LoginActivity : AppCompatActivity() {
                             if (it.isSuccessful) {
                                 progressBar.visibility = View.GONE
                                 showHome(it.result?.user?.email ?: "", ProviderType.EMAIL)
+                                analitycs.logEvent("operation_succes", Model.operation_success("Sesión iniciada"))
                                 finish()
                             } else {
 //                                showAlert()
@@ -133,6 +135,7 @@ class LoginActivity : AppCompatActivity() {
                         this@LoginActivity, "Llene todos los campos",
                         Toast.LENGTH_SHORT
                     ).show()
+                    analitycs.logEvent("user_error", Model.userError("Iniciar Sesion", "Llene todos los campos"))
                 }
             }
 

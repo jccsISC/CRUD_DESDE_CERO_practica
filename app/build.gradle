@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.jccsisc.loginfirebase"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -64,4 +64,13 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
 
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
+
+
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+
+    implementation 'com.airbnb.android:lottie:3.4.4'
+
 }

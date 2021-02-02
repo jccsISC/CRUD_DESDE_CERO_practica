@@ -1,4 +1,4 @@
-package com.jccsisc.loginfirebase
+package com.jccsisc.loginfirebase.ui
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.jccsisc.loginfirebase.R
 import com.jccsisc.loginfirebase.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
