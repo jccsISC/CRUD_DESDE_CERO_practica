@@ -3,6 +3,7 @@ package com.jccsisc.loginfirebase.ui
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -40,6 +41,10 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("http://demo1466250.mockable.io/cities")
+        startActivity(intent)
 
         //Lanzaremos un evento personalizado en analitycs
         analitycs = FirebaseAnalytics.getInstance(this)
