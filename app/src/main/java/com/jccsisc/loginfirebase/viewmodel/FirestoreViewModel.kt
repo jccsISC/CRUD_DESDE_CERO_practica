@@ -3,7 +3,6 @@ package com.jccsisc.loginfirebase.viewmodel
 import androidx.lifecycle.ViewModel
 import com.jccsisc.loginfirebase.data.model.UserModel
 import com.jccsisc.loginfirebase.domain.FirestoreUseCaseInteractor
-import com.jccsisc.loginfirebase.utils.ProviderType
 
 class FirestoreViewModel : ViewModel() {
 

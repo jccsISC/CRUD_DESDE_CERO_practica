@@ -2,7 +2,6 @@ package com.jccsisc.loginfirebase.domain
 
 import com.jccsisc.loginfirebase.data.model.UserModel
 import com.jccsisc.loginfirebase.data.repo.FirebaseRepo
-import com.jccsisc.loginfirebase.utils.ProviderType
 
 class FirestoreUseCaseInteractor {
 

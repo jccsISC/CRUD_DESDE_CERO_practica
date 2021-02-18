@@ -3,16 +3,23 @@ package com.jccsisc.loginfirebase.ui
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
@@ -20,10 +27,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import com.jccsisc.loginfirebase.utils.ProviderType
 import com.jccsisc.loginfirebase.R
 import com.jccsisc.loginfirebase.data.model.Model
 import com.jccsisc.loginfirebase.databinding.ActivityLoginBinding
+import com.jccsisc.loginfirebase.utils.ProviderType
 
 
 class LoginActivity : AppCompatActivity() {
@@ -33,6 +40,7 @@ class LoginActivity : AppCompatActivity() {
     private val authUser: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val db = FirebaseFirestore.getInstance()
     lateinit var  analitycs: FirebaseAnalytics
+    var callbackManager = CallbackManager.Factory.create();
 
     val authEmail = RegisterActivity.authEmail
 
@@ -42,13 +50,17 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("http://demo1466250.mockable.io/cities")
-        startActivity(intent)
+        //abrir directamente esa pagina
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        intent.data = Uri.parse("http://demo1466250.mockable.io/cities")
+//        startActivity(intent)
+
+        FacebookSdk.sdkInitialize(applicationContext);
+        AppEventsLogger.activateApp(this);
 
         //Lanzaremos un evento personalizado en analitycs
-        analitycs = FirebaseAnalytics.getInstance(this)
-        analytics()
+//        analitycs = FirebaseAnalytics.getInstance(this)
+//        analytics()
         remoteConfig()
         pushNotificationShow()
         setUp()
@@ -129,7 +141,10 @@ class LoginActivity : AppCompatActivity() {
                             if (it.isSuccessful) {
                                 progressBar.visibility = View.GONE
                                 showHome(it.result?.user?.email ?: "", ProviderType.EMAIL)
-                                analitycs.logEvent("operation_succes", Model.operation_success("Sesión iniciada"))
+                                analitycs.logEvent(
+                                    "operation_succes",
+                                    Model.operation_success("Sesión iniciada")
+                                )
                                 finish()
                             } else {
 //                                showAlert()
@@ -140,7 +155,10 @@ class LoginActivity : AppCompatActivity() {
                         this@LoginActivity, "Llene todos los campos",
                         Toast.LENGTH_SHORT
                     ).show()
-                    analitycs.logEvent("user_error", Model.userError("Iniciar Sesion", "Llene todos los campos"))
+                    analitycs.logEvent(
+                        "user_error",
+                        Model.userError("Iniciar Sesion", "Llene todos los campos")
+                    )
                 }
             }
 
@@ -153,10 +171,43 @@ class LoginActivity : AppCompatActivity() {
                         .build(), GOOGLE_SIGN_IN
                 )
             }
+
+            imvBtnFacebook.setOnClickListener {
+
+                callbackManager = CallbackManager.Factory.create()
+
+                LoginManager.getInstance().logInWithReadPermissions(this@LoginActivity, listOf("email"))
+
+                LoginManager.getInstance().registerCallback(callbackManager,
+                    object : FacebookCallback<LoginResult?> {
+                        override fun onSuccess(result: LoginResult?) {
+                            result?.let {
+                                val token = it.accessToken
+                                val credential = FacebookAuthProvider.getCredential(token.token)
+
+                                FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        showHome(it.result?.user?.email ?: "", ProviderType.FACEBOOK)
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onCancel() {
+
+                        }
+
+                        override fun onError(error: FacebookException?) {
+                            Toast.makeText(this@LoginActivity, "error", Toast.LENGTH_SHORT).show()
+                        }
+
+                    })
+            }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        callbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == GOOGLE_SIGN_IN) {
@@ -170,7 +221,7 @@ class LoginActivity : AppCompatActivity() {
                     hashMapOf(
                         "name" to user!!.displayName,
                         "city" to "México",
-                        "provider" to ProviderType.GOOGLE
+                        "provider" to ProviderType.GOOGLE.name
                     )
                 )
                 showHome(email.toString(), ProviderType.GOOGLE)

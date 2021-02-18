@@ -14,4 +14,6 @@
     <string name="log_editar">Editar</string>
     <string name="log_update">Actalizar</string>
     <string name="auth">user</string>
+    <string name="facebook_app_id">195938685507051</string> <string name="fb_login_protocol_scheme">fb195938685507051</string>
+
 </resources>

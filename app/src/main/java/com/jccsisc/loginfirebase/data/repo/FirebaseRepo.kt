@@ -1,12 +1,10 @@
 package com.jccsisc.loginfirebase.data.repo
 
 import android.util.Log
-import com.firebase.ui.auth.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jccsisc.loginfirebase.data.model.UserModel
 import com.jccsisc.loginfirebase.ui.RegisterActivity
-import com.jccsisc.loginfirebase.utils.ProviderType
 
 class FirebaseRepo {
 
@@ -24,7 +22,7 @@ class FirebaseRepo {
         FirebaseAuth.getInstance()
             .createUserWithEmailAndPassword(userModel.email, userModel.password).addOnCompleteListener {
                 if (it.isSuccessful) {
-//                    RegisterActivity.authEmail?.currentUser
+                    RegisterActivity.authEmail?.currentUser
                     db.collection("usuarios").document(userModel.email).set(dataUser).addOnCompleteListener {
                         if (it.isSuccessful) {
                             //mensaje ok
